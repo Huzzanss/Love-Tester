@@ -60,12 +60,6 @@
     }
     h1{font-size:20px;margin:0}
     p.lead{margin:0;color:var(--muted);font-size:13px}
-    .inputs{
-      display:flex;
-      gap:12px;
-      margin-top:18px;
-      align-items:flex-end;
-    }
     label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
     input[type="text"]{
       width:100%;
@@ -86,6 +80,15 @@
       background:linear-gradient(90deg,var(--accent),var(--accent-2));
       color:white;
       box-shadow:0 8px 22px rgba(255,107,129,0.12);
+    }
+    .ghost{
+      background:transparent;
+      border:1px solid rgba(255,255,255,0.04);
+      color:var(--muted);
+      padding:10px 12px;
+      border-radius:10px;
+      cursor:pointer;
+      font-weight:600;
     }
     .side{
       background: rgba(255,255,255,0.02);
@@ -111,269 +114,194 @@
       background:linear-gradient(90deg,#ff7b99,#ffb3c2);
       box-shadow:0 6px 18px rgba(255,107,129,0.12);
     }
-    .result{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-    }
     .percent{
       font-size:34px;
       font-weight:700;
-      letter-spacing:-0.02em;
     }
-    .msg{color:var(--muted);font-size:13px}
     .low{color:#ffb3b3}
     .mid{color:#ffd59a}
     .high{color:#b6ffda}
-    .actions{display:flex;gap:8px;flex-wrap:wrap}
-    .ghost{
-      background:transparent;
-      border:1px solid rgba(255,255,255,0.04);
-      color:var(--muted);
-      padding:10px 12px;
-      border-radius:10px;
-      cursor:pointer;
-      font-weight:600;
+    footer.note{grid-column:1/-1;color:var(--muted);font-size:13px;padding-top:8px;text-align:center}
+    canvas#confetti{
+      position:fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events:none;
+      z-index:10;
     }
-    footer.note{grid-column:1/-1;color:var(--muted);font-size:13px;padding-top:8px}
-    .share-link{word-break:break-all;font-size:13px;color:#cfe8ff}
     @media (max-width:840px){
       .card{grid-template-columns:1fr; padding:18px}
-      .side{order:2}
     }
   </style>
 </head>
 <body>
-  <main class="card" role="main">
+  <canvas id="confetti"></canvas>
+  <main class="card">
     <div class="header">
       <div class="logo">❤</div>
       <div>
         <h1>Love Tester — Seberapa Sempurna Hubungan?</h1>
-        <p class="lead">Masukkan dua nama, lalu lihat skor kompatibilitasnya. Hasil bersifat hiburan.</p>
+        <p class="lead">Masukkan dua nama, lalu lihat skor cintanya 💞</p>
       </div>
     </div>
 
-    <section aria-label="Form utama">
-      <div style="display:flex;flex-direction:column;gap:8px">
-        <div>
-          <label for="nameA">Nama Pertama</label>
-          <input id="nameA" type="text" placeholder="Contoh: Dinda" autocomplete="off" />
-        </div>
-        <div>
-          <label for="nameB">Nama Kedua</label>
-          <input id="nameB" type="text" placeholder="Contoh: Rama" autocomplete="off" />
-        </div>
-
-        <div class="inputs">
-          <button id="testBtn" class="btn">Tes Cinta</button>
-          <button id="randomBtn" class="ghost" title="Acak nama">Acak</button>
-          <button id="clearBtn" class="ghost" title="Reset">Reset</button>
-        </div>
-
-        <div style="margin-top:8px;color:var(--muted);font-size:13px">
-          Tip: hasil bersifat hiburan — gunakan untuk seru-seruan saja.
-        </div>
+    <section>
+      <label>Nama Pertama</label>
+      <input id="nameA" type="text" placeholder="Contoh: Hafidz" />
+      <label style="margin-top:10px;">Nama Kedua</label>
+      <input id="nameB" type="text" placeholder="Contoh: Adel" />
+      <div style="margin-top:14px;display:flex;gap:10px;">
+        <button id="testBtn" class="btn">Tes Cinta</button>
+        <button id="clearBtn" class="ghost">Reset</button>
       </div>
     </section>
 
-    <aside class="side" aria-label="Hasil">
-      <div style="display:flex;justify-content:space-between;align-items:center">
-        <div style="font-size:14px;color:var(--muted)">Hasil</div>
-        <div class="share-link" id="shareLink">—</div>
-      </div>
-
-      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
-        <div class="result">
-          <div>
-            <div id="namesDisplay" style="font-weight:700">—</div>
-            <div class="msg" id="subtext">Masukkan dua nama lalu tekan "Tes Cinta".</div>
-          </div>
-          <div style="text-align:right">
-            <div class="percent" id="percent">0%</div>
-            <div id="rankLabel" class="msg">—</div>
-          </div>
-        </div>
-
-        <div class="meter" aria-hidden="true">
-          <i id="meterFill"></i>
-        </div>
-
-        <div id="flair" style="min-height:34px;color:var(--muted);font-size:15px">—</div>
-
-        <div style="display:flex;gap:8px;justify-content:flex-end">
-          <button id="copyBtn" class="ghost">Salin Hasil</button>
-          <button id="shareBtn" class="btn">Bagikan</button>
-        </div>
-      </div>
-
-      <div style="margin-top:8px;border-top:1px dashed rgba(255,255,255,0.03);padding-top:10px;font-size:13px;color:var(--muted)">
-        <strong>Penjelasan singkat:</strong>
-        <div style="margin-top:6px">Skor dihitung dari kombinasi karakter nama (deterministic). Hanya untuk hiburan.</div>
-      </div>
+    <aside class="side">
+      <div style="font-size:14px;color:#aaa;">Hasil:</div>
+      <div id="namesDisplay" style="font-weight:700">—</div>
+      <div class="percent" id="percent">0%</div>
+      <div id="rankLabel" style="font-size:14px;color:#aaa;">—</div>
+      <div class="meter"><i id="meterFill"></i></div>
+      <div id="flair" style="font-size:15px;color:#aaa;">Masukkan dua nama dulu ya 💬</div>
     </aside>
 
-    <footer class="note">
-      Buat olehmu • Simpan halaman ini dan bagikan ke temanmu. Hasil tidak serius.
-    </footer>
+    <footer class="note">Hanya untuk hiburan. Nikmati dengan senyum 😊</footer>
   </main>
 
   <script>
-    // Helper: normalisasi nama
-    function clean(s){
-      return String(s || '').trim().toLowerCase().replace(/\s+/g,' ');
+    // ------------------------
+    // Confetti animation (for 100%)
+    // ------------------------
+    const confettiCanvas = document.getElementById('confetti');
+    const ctx = confettiCanvas.getContext('2d');
+    let confettiPieces = [];
+    function resizeCanvas(){
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    function createConfetti(){
+      confettiPieces = Array.from({length:150}, () => ({
+        x: Math.random()*confettiCanvas.width,
+        y: Math.random()*confettiCanvas.height - confettiCanvas.height,
+        r: Math.random()*6 + 2,
+        d: Math.random()*0.9 + 0.3,
+        color: `hsl(${Math.random()*360},100%,70%)`
+      }));
+    }
+    function drawConfetti(){
+      ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height);
+      confettiPieces.forEach(p=>{
+        ctx.beginPath();
+        ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=p.color;
+        ctx.fill();
+      });
+      updateConfetti();
+      requestAnimationFrame(drawConfetti);
+    }
+    function updateConfetti(){
+      confettiPieces.forEach(p=>{
+        p.y += p.d*4;
+        if(p.y > confettiCanvas.height){
+          p.y = -10;
+          p.x = Math.random()*confettiCanvas.width;
+        }
+      });
+    }
+    function startConfetti(){
+      createConfetti();
+      setTimeout(()=>confettiPieces=[],5000);
     }
 
-    // Deterministic hash: djb2-like plus mixing
-    function nameHash(a, b){
+    // ------------------------
+    // Love Tester Logic
+    // ------------------------
+    function clean(s){
+      return String(s || '').trim().toLowerCase();
+    }
+
+    function nameHash(a,b){
       const s = clean(a) + '|' + clean(b);
       let h = 5381;
-      for (let i = 0; i < s.length; i++){
-        h = ((h << 5) + h) ^ s.charCodeAt(i); // h * 33 ^ c
-        // keep in 32-bit
-        h = h >>> 0;
+      for(let i=0;i<s.length;i++){
+        h=((h<<5)+h)^s.charCodeAt(i);
       }
-      // scramble a bit
-      h = (h ^ (h >>> 16)) >>> 0;
-      return h;
+      return h>>>0;
     }
 
-    // convert hash to 0..100
     function scoreFromHash(h){
-      // use modular arithmetic & pseudo-random linear congruential transform
-      const mod = 101; // 0..100 inclusive
-      // LCG: (a*h + c) % m where a,c chosen
-      const a = 1664525, c = 1013904223;
-      const x = (a * h + c) >>> 0;
-      return x % mod;
+      const a=1664525,c=1013904223;
+      return ((a*h+c)>>>0)%101;
     }
 
-    // Produce short message & rank based on percent
     function rankFor(p){
-      if (p >= 95) return {label:'Sempurna', flair:'Cinta abadi 💖', cls:'high'};
-      if (p >= 80) return {label:'Sangat Cocok', flair:'Koneksi kuat 🌟', cls:'high'};
-      if (p >= 60) return {label:'Cocok', flair:'Ada chemistry 😊', cls:'mid'};
-      if (p >= 40) return {label:'Biasa', flair:'Mesti usaha lagi 🤝', cls:'mid'};
+      if(p>=95) return {label:'Sempurna', flair:'Cinta abadi 💖', cls:'high'};
+      if(p>=80) return {label:'Sangat Cocok', flair:'Koneksi kuat 🌟', cls:'high'};
+      if(p>=60) return {label:'Cocok', flair:'Ada chemistry 😊', cls:'mid'};
+      if(p>=40) return {label:'Biasa', flair:'Mesti usaha lagi 🤝', cls:'mid'};
       return {label:'Kurang Cocok', flair:'Butuh kerja keras 💪', cls:'low'};
     }
 
-    // UI bindings
-    const nameA = document.getElementById('nameA');
-    const nameB = document.getElementById('nameB');
-    const testBtn = document.getElementById('testBtn');
-    const randomBtn = document.getElementById('randomBtn');
-    const clearBtn = document.getElementById('clearBtn');
-    const percentEl = document.getElementById('percent');
-    const meterFill = document.getElementById('meterFill');
-    const namesDisplay = document.getElementById('namesDisplay');
-    const subtext = document.getElementById('subtext');
-    const flair = document.getElementById('flair');
-    const rankLabel = document.getElementById('rankLabel');
-    const copyBtn = document.getElementById('copyBtn');
-    const shareBtn = document.getElementById('shareBtn');
-    const shareLink = document.getElementById('shareLink');
-
-    function updateShareLink(a,b){
-      if (!a && !b){ shareLink.textContent = '—'; return;}
-      const url = new URL(location.href);
-      url.searchParams.set('a', a || '');
-      url.searchParams.set('b', b || '');
-      shareLink.textContent = url.toString();
-    }
+    const nameA=document.getElementById('nameA');
+    const nameB=document.getElementById('nameB');
+    const testBtn=document.getElementById('testBtn');
+    const clearBtn=document.getElementById('clearBtn');
+    const percentEl=document.getElementById('percent');
+    const meterFill=document.getElementById('meterFill');
+    const namesDisplay=document.getElementById('namesDisplay');
+    const flair=document.getElementById('flair');
+    const rankLabel=document.getElementById('rankLabel');
 
     function runTest(a,b){
-      if (!a || !b){
-        subtext.textContent = 'Masukkan dua nama terlebih dahulu.';
+      if(!a||!b){
+        flair.textContent='Masukkan dua nama dulu 💬';
         return;
       }
-      const h = nameHash(a,b);
-      const p = scoreFromHash(h);
-      const r = rankFor(p);
 
-      // update UI
-      namesDisplay.textContent = `${a.trim()} ❤ ${b.trim()}`;
-      percentEl.textContent = p + '%';
-      rankLabel.textContent = r.label;
-      flair.textContent = r.flair;
-      // color classes for percent (simple)
-      percentEl.className = 'percent ' + r.cls;
-      rankLabel.className = 'msg';
-      subtext.textContent = 'Hasil deterministic berdasarkan nama. Untuk hiburan.';
-      meterFill.style.width = p + '%';
+      const ca=clean(a), cb=clean(b);
+      const special=[
+        ['hafidz','adel'],
+        ['adel','hafidz'],
+        ['syifa','syatir'],
+        ['syatir','syifa']
+      ];
+      let p=0;
+      if(special.some(s=> (s[0]===ca && s[1]===cb) || (s[1]===ca && s[0]===cb))){
+        p=100;
+      } else {
+        const h=nameHash(a,b);
+        p=scoreFromHash(h);
+      }
 
-      // update share link
-      updateShareLink(a,b);
+      const r=rankFor(p);
+      namesDisplay.textContent=`${a.trim()} ❤ ${b.trim()}`;
+      percentEl.textContent=p+'%';
+      percentEl.className='percent '+r.cls;
+      rankLabel.textContent=r.label;
+      meterFill.style.width=p+'%';
+      flair.textContent=p===100 ? 'Cinta sejati 💞' : r.flair;
+
+      if(p===100){
+        startConfetti();
+      }
     }
 
-    // events
-    testBtn.addEventListener('click',()=>{
-      runTest(nameA.value, nameB.value);
-    });
+    testBtn.onclick=()=> runTest(nameA.value,nameB.value);
+    clearBtn.onclick=()=>{
+      nameA.value=nameB.value='';
+      percentEl.textContent='0%';
+      meterFill.style.width='0%';
+      namesDisplay.textContent='—';
+      flair.textContent='Masukkan dua nama dulu 💬';
+      rankLabel.textContent='—';
+    };
 
-    randomBtn.addEventListener('click',()=>{
-      const sampleA = ['Alya','Raka','Nadia','Iqbal','Sari','Rama','Dewi','Arga','Indah','Farhan'];
-      const sampleB = ['Fathan','Citra','Bima','Luna','Gita','Andri','Rani','Surya','Maya','Hafidz'];
-      const a = sampleA[Math.floor(Math.random()*sampleA.length)];
-      const b = sampleB[Math.floor(Math.random()*sampleB.length)];
-      nameA.value = a;
-      nameB.value = b;
-      runTest(a,b);
-    });
-
-    clearBtn.addEventListener('click',()=>{
-      nameA.value = ''; nameB.value = '';
-      percentEl.textContent = '0%';
-      meterFill.style.width = '0%';
-      namesDisplay.textContent = '—';
-      subtext.textContent = 'Masukkan dua nama lalu tekan "Tes Cinta".';
-      flair.textContent = '—';
-      rankLabel.textContent = '—';
-      shareLink.textContent = '—';
-    });
-
-    copyBtn.addEventListener('click', async ()=>{
-      const txt = `${namesDisplay.textContent} — ${percentEl.textContent} (${flair.textContent})`;
-      try{
-        await navigator.clipboard.writeText(txt);
-        copyBtn.textContent = 'Tersalin ✓';
-        setTimeout(()=> copyBtn.textContent = 'Salin Hasil',1200);
-      }catch(e){
-        // fallback
-        alert('Gagal menyalin otomatis. Salin manual:\n\n' + txt);
-      }
-    });
-
-    shareBtn.addEventListener('click', ()=>{
-      const link = shareLink.textContent;
-      if (!link || link === '—'){ alert('Hasil belum tersedia. Tes dulu dengan dua nama.'); return; }
-      // try share api first
-      if (navigator.share){
-        navigator.share({title:'Love Tester', text:`Cek kecocokan: ${namesDisplay.textContent}`, url:link})
-          .catch(()=>{ prompt('Copy link ini:', link); });
-      }else{
-        prompt('Salin link ini untuk dibagikan:', link);
-      }
-    });
-
-    // If URL has params, auto-run (so user bisa share link)
-    (function checkUrlParams(){
-      const params = new URLSearchParams(location.search);
-      const a = params.get('a');
-      const b = params.get('b');
-      if (a || b){
-        nameA.value = a || '';
-        nameB.value = b || '';
-        // slight delay so UI ready
-        setTimeout(()=> runTest(nameA.value, nameB.value), 120);
-      }
-    })();
-
-    // allow Enter key
-    [nameA, nameB].forEach(inp=>{
-      inp.addEventListener('keydown', (e)=>{
-        if (e.key === 'Enter') testBtn.click();
-      });
-    });
+    drawConfetti();
   </script>
 </body>
 </html>
