@@ -266,8 +266,6 @@
 
       const ca=clean(a), cb=clean(b);
       const special=[
-        ['hafidz','adel'],
-        ['adel','hafidz'],
         ['syifa','syatir'],
         ['syatir','syifa'],
         ['aca','naura'],
@@ -289,7 +287,7 @@
       ];
       const notspecial=[
         ['alita','gio'],
-        ['gio','alita']
+        ['gio','alita'],
       ];
       let p=0;
       if(special.some(s=> (s[0]===ca && s[1]===cb) || (s[1]===ca && s[0]===cb))){
@@ -304,7 +302,7 @@
         const h=nameHash(a,b);
         p=scoreFromHash(h);
       }
-        if(superspecial.some(s=> (s[0]===ca && s[1]===cb) || (s[1]===ca && s[0]===cb))){
+      if(superspecial.some(s=> (s[0]===ca && s[1]===cb) || (s[1]===ca && s[0]===cb))){
         p=1000;
       } else {
         const h=nameHash(a,b);
