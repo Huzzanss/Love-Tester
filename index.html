@@ -240,6 +240,7 @@
     }
 
     function rankFor(p){
+      if(p>=999) return{label:'Cuman Teman', flair:'Hafidz Suka Adel Tapi Adel Gak Suka Hafidz', cls:'?'};
       if(p>=95) return {label:'Sempurna', flair:'Cinta abadi 💖', cls:'high'};
       if(p>=80) return {label:'Sangat Cocok', flair:'Koneksi kuat 🌟', cls:'high'};
       if(p>=60) return {label:'Cocok', flair:'Ada chemistry 😊', cls:'mid'};
@@ -282,6 +283,10 @@
         ['dzaki','kirana'],
         ['kirana','dzaki'],
       ];
+      const superspecial=[
+        ['hafidz','adel'],
+        ['adel','hafidz'],
+      ];
       const notspecial=[
         ['alita','gio'],
         ['gio','alita']
@@ -299,6 +304,11 @@
         const h=nameHash(a,b);
         p=scoreFromHash(h);
       }
+        if(superspecial.some(s=> (s[0]===ca && s[1]===cb) || (s[1]===ca && s[0]===cb))){
+        p=1000;
+      } else {
+        const h=nameHash(a,b);
+        p=scoreFromHash(h);
 
       const r=rankFor(p);
       namesDisplay.textContent=`${a.trim()} ❤ ${b.trim()}`;
