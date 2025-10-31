@@ -282,9 +282,19 @@
         ['dzaki','kirana'],
         ['kirana','dzaki'],
       ];
+      const notspecial=[
+        ['alita','gio'],
+        ['gio','alita']
+      ];
       let p=0;
       if(special.some(s=> (s[0]===ca && s[1]===cb) || (s[1]===ca && s[0]===cb))){
         p=100;
+      } else {
+        const h=nameHash(a,b);
+        p=scoreFromHash(h);
+      }
+      if(notspecial.some(s=> (s[0]===ca && s[1]===cb) || (s[1]===ca && s[0]===cb))){
+        p=0;
       } else {
         const h=nameHash(a,b);
         p=scoreFromHash(h);
